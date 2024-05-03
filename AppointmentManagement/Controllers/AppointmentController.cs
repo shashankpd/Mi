@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AppointmentManagement.Controllers
 {
@@ -30,7 +31,7 @@ namespace AppointmentManagement.Controllers
             try
             {
                 var patientIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                Console.WriteLine(patientIdClaim + "hhhhhhhhhhhhhhhhhhhhhhhhh");
+               
                 int patientId = Convert.ToInt32(patientIdClaim);
                
                 var addedAppointment = await _appointmentService.CreateAppointment(appointment, patientId, DoctorID);
@@ -38,7 +39,7 @@ namespace AppointmentManagement.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -50,11 +51,11 @@ namespace AppointmentManagement.Controllers
             {
                 var patientId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 var appointments = await _appointmentService.GetAllAppointmentsByPatient(patientId);
-                return Ok(appointments);
+                return Ok(new{ Success = true, Message = "Retrieved patient successfully", Data = appointments });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while retrieving appointments by doctor: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -66,11 +67,11 @@ namespace AppointmentManagement.Controllers
             {
                 var doctorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 var appointments = await _appointmentService.GetAllAppointmentsByDoctor(doctorId);
-                return Ok(appointments);
+                return Ok(new { Success = true, Message = "success", Data = appointments });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while retrieving appointments by doctor: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -82,11 +83,11 @@ namespace AppointmentManagement.Controllers
             {
                 var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 var appointments = await _appointmentService.GetAppointmentsById(userId);
-                return Ok(appointments);
+                return Ok(new { Success = true, Message = "success", Data = appointments });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred while retrieving appointments by patient: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
